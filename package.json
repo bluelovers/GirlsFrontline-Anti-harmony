@@ -1,0 +1,24 @@
+{
+  "name": "girlsfrontline_anti-harmony",
+  "version": "1.0.0",
+  "description": "GirlsFrontline Anti-harmony",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "adbkit": "^2.10.0",
+    "bluebird": "^3.5.0",
+    "cheerio": "^1.0.0-rc.1",
+    "stream-buffers": "^3.0.1",
+    "upath2": "^1.0.2"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "patch": "node ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
