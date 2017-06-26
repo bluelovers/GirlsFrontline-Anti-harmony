@@ -2,12 +2,12 @@
  * Created by user.
  */
 
-const Promise = require('bluebird')
-const fs = require('fs')
-const adb = require('adbkit')
-const client = adb.createClient()
-const path = require('upath2')
-const cheerio = require('cheerio')
+const Promise = require('bluebird');
+const fs = require('fs');
+const adb = require('adbkit');
+const client = adb.createClient();
+const path = require('upath2');
+const cheerio = require('cheerio');
 const streamBuffers = require('stream-buffers');
 //const stream = require('stream');
 
