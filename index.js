@@ -11,6 +11,8 @@ const cheerio = require('cheerio')
 const streamBuffers = require('stream-buffers');
 //const stream = require('stream');
 
+const adb_helper = require('./src/adb/helper');
+
 const TEMP = path.join((process.env.TMP || process.env.TEMP), '/');
 
 const DEBUG = 0;
@@ -20,9 +22,6 @@ dummy();
 async function dummy()
 {
 	'use strict';
-
-	let pull_file = `/data/data/tw.txwy.and.snqx/shared_prefs/tw.txwy.and.snqx.xml`;
-	let push_file = pull_file + (DEBUG ? '.new' : '');
 
 	console.log(`Get all connected devices`);
 
@@ -37,63 +36,93 @@ async function dummy()
 
 	for (let device of devices)
 	{
-		let transfer = await client.pull(device.id, pull_file);
+		let apps = await adb_helper.appExists([
+			// google play
+			'tw.txwy.and.snqx',
+			// tw site apk
+			'tw.txwy.andgw.snqx',
+			// cn site apk
+			'com.digitalsky.girlsfrontline.cn',
+		], device, client);
 
-		let tp = new Promise(function (resolve, reject)
+		console.log(`[${device.id}] App installed (${Object.keys(apps).length})`);
+		console.info(JSON.stringify(apps, null, "\t"));
+
+		for (let app in apps)
 		{
-			let buf = new streamBuffers.WritableStreamBuffer();
-
-			transfer.on('end', function ()
+			if (!apps[app])
 			{
-				resolve({
-					id: device.id,
-					pull_file: pull_file,
-					tmp: buf
-				})
-			})
-			transfer.on('error', reject)
-			transfer.pipe(buf)
-		});
+				console.info(`[${device.id}] Can't found ${app}`);
 
-		let data = await tp;
+				continue;
+			}
 
-		if (!data.tmp.size())
-		{
-			console.error(`[${device.id}] Error: Can't found ${pull_file}`);
+			let pull_file = `/data/data/${app}/shared_prefs/${app}.xml`;
+			let push_file = pull_file + (DEBUG ? '.new' : '');
 
-			continue;
-		}
+			let buf = await adb_helper.readFileBuffer(pull_file, device, client);
 
-		let $ = cheerio.load(data.tmp.getContents(), {
-			withDomLvl1: true,
-			//normalizeWhitespace: false,
-			xmlMode: true,
-			//decodeEntities: true,
-		});
+			if (!buf || !buf.size())
+			{
+				console.error(`[${device.id}] Error: Can't found ${pull_file}`);
 
-		if ($('map int[name="Normal"]').attr('value') != 1 || DEBUG)
-		{
-			console.log(`[${device.id}] Set Config`);
+				buf = new streamBuffers.WritableStreamBuffer();
 
-			$('map int[name="Normal"]').attr('value', 1);
+				buf.write(`<?xml version='1.0' encoding='utf-8' standalone='yes' ?><map></map>`);
+			}
 
-			let file = _tmp_file(device.id, pull_file, 'new');
+			let data = {
+				id: device.id,
+				pull_file: pull_file,
+				tmp: buf,
+			};
 
-			fs.writeFileSync(file, $.xml());
+			let $ = cheerio.load(data.tmp.getContents(), {
+				withDomLvl1: true,
+				//normalizeWhitespace: false,
+				xmlMode: true,
+				//decodeEntities: true,
+			});
 
-			console.log(`[${device.id}] Pushing ${push_file}`);
+			let elem = $('map int[name="Normal"]');
 
-			await client.push(device.id, file, push_file);
+			if (!elem.length)
+			{
+				$('map').append(`<int name="Normal" value="0" />`);
 
-			console.log(`[${device.id}] Pushed ${push_file}`);
+				elem = $('map int[name="Normal"]');
+			}
 
-			console.log(`[${device.id}] Delete cache file \`${file}\``);
+			if (DEBUG)
+			{
+				let file = _tmp_file(device.id, pull_file);
+				fs.writeFileSync(file, $.xml());
+			}
 
-			fs.unlinkSync(file);
-		}
-		else
-		{
-			console.info(`[${device.id}] Skip`);
+			if (elem.attr('value') != 1 || DEBUG)
+			{
+				console.info(`[${device.id}] Set Config ${app}`);
+
+				elem.attr('value', 1);
+
+				let file = _tmp_file(device.id, pull_file, 'new');
+
+				fs.writeFileSync(file, $.xml());
+
+				console.log(`[${device.id}] Pushing ${push_file}`);
+
+				await client.push(device.id, file, push_file + (DEBUG ? 'new' : ''));
+
+				console.log(`[${device.id}] Pushed ${push_file}`);
+
+				console.log(`[${device.id}] Delete cache file \`${file}\``);
+
+				!DEBUG && fs.unlinkSync(file);
+			}
+			else
+			{
+				console.info(`[${device.id}] Skip ${app}`);
+			}
 		}
 	}
 
