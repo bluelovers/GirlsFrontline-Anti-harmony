@@ -22,15 +22,15 @@
 
 ## 需求
 
-1. 需要安裝 [nodejs](https://nodejs.org)
-並且於解壓縮後的資料夾內輸入 `npm install`
-也可以使用免安裝版的 nodejs
+1. 需要安裝 [nodejs](https://nodejs.org)<br/>
+並且於解壓縮後的資料夾內輸入 `npm install`<br/>
+也可以使用免安裝版的 nodejs<br/>
 *備註: [2017.06.26.01](https://github.com/bluelovers/GirlsFrontline-Anti-harmony/releases/tag/2017.06.26.01) 內已包含 nodejs 與模組檔案*
 
-2. 開啟 USB 偵錯模式 不知道的人請點[這裡](http://www.techbang.com/posts/18186-hidden-in-the-developers-option-little-cheat-cheat-secretly-reported-73-mobile-wholesalers-may)
+2. 開啟 USB 偵錯模式 不知道的人請點[這裡](http://www.techbang.com/posts/18186-hidden-in-the-developers-option-little-cheat-cheat-secretly-reported-73-mobile-wholesalers-may)<br/>
 *夜神模擬器內建不需要此步驟*
 
-3. 將手機連接到電腦或開啟所有有安裝少女前線的模擬器
+3. 將手機連接到電腦或開啟所有有安裝少女前線的模擬器<br/>
 *部分手機可能需要先上手機的官方網站下載手機驅動程式*
 
 ## 原理
