@@ -4,6 +4,7 @@
 
 'use strict';
 
+const Promise = require('bluebird');
 const adb = require('adbkit');
 const streamBuffers = require('stream-buffers');
 
