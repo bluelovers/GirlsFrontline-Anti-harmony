@@ -34,6 +34,8 @@ async function dummy()
 		return process.exit(1);
 	}
 
+	console.log(JSON.stringify(devices, null, "\t"));
+
 	for (let device of devices)
 	{
 		let apps = await adb_helper.appExists([
