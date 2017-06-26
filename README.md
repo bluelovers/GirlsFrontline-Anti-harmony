@@ -23,3 +23,8 @@
 並且於解壓縮後的資料夾內輸入 `npm install`
 
 也可以使用免安裝版的 nodejs
+
+
+## 原理
+
+請參閱 [RE:【情報】[台版]反和諧開放](https://forum.gamer.com.tw/Co.php?bsn=31406&sn=7208&subbsn=0)
