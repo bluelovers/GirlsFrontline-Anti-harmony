@@ -58,7 +58,7 @@ async function dummy()
 			'com.digitalsky.girlsfrontline.cn',
 		], device, client);
 
-		console.log(`[${device.id}] 已偵測到的 APP 數量 (${Object.keys(apps).length})`);
+		console.log(`[${device.id}] 偵測的 APP 數量 (${Object.keys(apps).length})`);
 
 		//console.info(JSON.stringify(apps, null, "\t"));
 		Object.keys(apps)
