@@ -58,7 +58,9 @@ async function dummy()
 			'com.digitalsky.girlsfrontline.cn',
 		], device, client);
 
-		console.log(`[${device.id}] 偵測的 APP 數量 (${Object.keys(apps).length})`);
+		console.log(`[${device.id}] 檢測 APP`);
+
+		let app_any = false;
 
 		//console.info(JSON.stringify(apps, null, "\t"));
 		Object.keys(apps)
@@ -67,8 +69,20 @@ async function dummy()
 
 				console.info(`\t`, apps[app] ? '已' : '未', '安裝', `\t${app}`, );
 
+				if (apps[app] )
+				{
+					app_any = true;
+				}
+
 			}, {})
 		;
+
+		if (!app_any)
+		{
+			console.error(`[${device.id}] Error: 找不到任何符合的 APP ( 未安裝 或 權限遭封鎖 )`);
+
+			continue;
+		}
 
 		for (let app in apps)
 		{
