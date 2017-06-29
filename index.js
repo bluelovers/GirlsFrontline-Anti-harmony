@@ -2,6 +2,8 @@
  * Created by user.
  */
 
+'use strict';
+
 const Promise = require('bluebird');
 const fs = require('fs');
 const adb = require('adbkit');
@@ -17,19 +19,28 @@ const TEMP = path.join((process.env.TMP || process.env.TEMP), '/');
 
 const DEBUG = 0;
 
-dummy();
+const DEBUG2 = 1;
+
+try
+{
+	dummy()
+		.catch(_error_trace)
+	;
+}
+catch (e)
+{
+	_error_trace(e);
+}
 
 async function dummy()
 {
-	'use strict';
-
-	console.log(`Get all connected devices`);
+	console.log(`搜尋裝置清單`);
 
 	let devices = await client.listDevices();
 
 	if (!devices.length)
 	{
-		console.error(`Error: Can't found devices`);
+		console.error(`Error: 找不到裝置列表，請檢查是否已連接可執行 ADB 的裝置`);
 
 		return process.exit(1);
 	}
@@ -47,14 +58,23 @@ async function dummy()
 			'com.digitalsky.girlsfrontline.cn',
 		], device, client);
 
-		console.log(`[${device.id}] App installed (${Object.keys(apps).length})`);
-		console.info(JSON.stringify(apps, null, "\t"));
+		console.log(`[${device.id}] 已偵測到的 APP 數量 (${Object.keys(apps).length})`);
+
+		//console.info(JSON.stringify(apps, null, "\t"));
+		Object.keys(apps)
+			.reduce((a, app) =>
+			{
+
+				console.info(`\t`, apps[app] ? '已' : '未', '安裝', `\t${app}`, );
+
+			}, {})
+		;
 
 		for (let app in apps)
 		{
 			if (!apps[app])
 			{
-				console.info(`[${device.id}] Can't found ${app}`);
+				console.info(`[${device.id}] 找不到 ${app}`);
 
 				continue;
 			}
@@ -66,7 +86,7 @@ async function dummy()
 
 			if (!buf || !buf.size())
 			{
-				console.error(`[${device.id}] Error: Can't found ${pull_file}`);
+				console.error(`[${device.id}] Error: 找不到 ${pull_file}`);
 
 				buf = new streamBuffers.WritableStreamBuffer();
 
@@ -103,7 +123,7 @@ async function dummy()
 
 			if (elem.attr('value') != 1 || DEBUG)
 			{
-				console.info(`[${device.id}] Set Config ${app}`);
+				console.info(`[${device.id}] 變更 ${app} 設定`);
 
 				elem.attr('value', 1);
 
@@ -111,25 +131,30 @@ async function dummy()
 
 				fs.writeFileSync(file, $.xml());
 
-				console.log(`[${device.id}] Pushing ${push_file}`);
+				console.log(`[${device.id}] 開始推送 ${push_file}`);
 
 				await client.push(device.id, file, push_file + (DEBUG ? 'new' : ''));
 
-				console.log(`[${device.id}] Pushed ${push_file}`);
+				console.log(`[${device.id}] 已成功推送 ${push_file}`);
 
-				console.log(`[${device.id}] Delete cache file \`${file}\``);
+				console.log(`[${device.id}] 刪除暫存檔案 \`${file}\``);
 
 				!DEBUG && fs.unlinkSync(file);
 			}
 			else
 			{
-				console.info(`[${device.id}] Skip ${app}`);
+				console.info(`[${device.id}] 略過 ${app} 不需要修改`);
 			}
 		}
 	}
 
-	console.info(`Done from all connected devices`);
+	console.info(`已結束所有裝置的處理步驟`);
+}
 
+function _error_trace(e)
+{
+	console.error(e, e.stack);
+	console.trace(e);
 }
 
 function _tmp_file(...argv)
