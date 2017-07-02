@@ -119,6 +119,35 @@ async function dummy()
 				xmlMode: true,
 				//decodeEntities: true,
 			});
+			
+			{
+				let SetConfigData = {};
+				
+				let elem = $('[name="SetConfigData"]');
+				
+				if (elem.length)
+				{
+					SetConfigData = JSON.parse(elem.text());
+				}
+				else
+				{
+					$('map').append(`<string name="SetConfigData" />`);
+
+					elem = $('map int[name="Normal"]');
+				}
+				
+				Object.assign(SetConfigData, {
+					
+					bulletTime: false,
+					autoLock: true,
+					
+					skillPerformance: false,
+					gunBreakProtect: true,
+					showBattleMessage: true,
+				});
+				
+				elem.text(JSON.stringify(SetConfigData));
+			}
 
 			let elem = $('map int[name="Normal"]');
 
