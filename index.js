@@ -125,11 +125,11 @@ async function dummy()
 				
 				let elem = $('[name="SetConfigData"]');
 				
-				if (elem.length)
+				if (elem.length && elem.text())
 				{
 					SetConfigData = JSON.parse(elem.text());
 				}
-				else
+				else if (!elem.length)
 				{
 					$('map').append(`<string name="SetConfigData" />`);
 
