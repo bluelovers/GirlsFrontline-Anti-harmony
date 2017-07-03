@@ -133,7 +133,7 @@ async function dummy()
 				{
 					$('map').append(`<string name="SetConfigData" />`);
 
-					elem = $('map int[name="SetConfigData"]');
+					elem = $('map [name="SetConfigData"]');
 				}
 				
 				Object.assign(SetConfigData, {
